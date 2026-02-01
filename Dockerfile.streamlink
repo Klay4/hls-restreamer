@@ -1,0 +1,10 @@
+FROM python:3.12-slim AS base
+RUN pip install --no-cache-dir streamlink
+
+# pv provides a ring-buffer between streamlink stdout and the FIFO,
+# preventing stalls when write and read rates momentarily diverge.
+RUN apt-get update && apt-get install -y --no-install-recommends pv && rm -rf /var/lib/apt/lists/*
+
+COPY entrypoint-streamlink.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
